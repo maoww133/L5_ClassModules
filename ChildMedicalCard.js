@@ -26,7 +26,7 @@ export class ChildMedicalCard extends MedicalCard {
         console.log('Детская медицинская карта:');
         console.log(`Пациент: ${this.patientName}`);
         console.log(`Возраст: ${this.age}`);
-        console.log(`Страховка: ${this.isInsured ? 'Да' : 'Нет'}`);
+        console.log(`Страховка: ${this.isInsured ? 'Есть' : 'Нет'}`);
         console.log(`Статус вакцинации: ${this.#vaccinationStatus}`);
     }
 
@@ -42,12 +42,8 @@ export class ChildMedicalCard extends MedicalCard {
     }
     
     clone() {
-        const cloned = new ChildMedicalCard(
-            this.patientName,
-            this.age,
-            this.isInsured,
-            this.vaccinationStatus
-        );
+        const cloned = super.clone();
+        cloned.#vaccinationStatus = this.#vaccinationStatus;
         console.log('Создан клон детской медицинской карты');
         return cloned;
     }
