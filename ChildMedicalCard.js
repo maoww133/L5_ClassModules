@@ -14,6 +14,7 @@ export class ChildMedicalCard extends MedicalCard {
     
     set vaccinationStatus(status) {
         const validStatuses = ["Полностью вакцинирован", "Частично вакцинирован", "Не вакцинирован"];
+        
         if (validStatuses.includes(status)) {
             this.#vaccinationStatus = status;
         } else {
@@ -36,25 +37,38 @@ export class ChildMedicalCard extends MedicalCard {
     
     copy() {
         const copy = super.copy();
-        console.log('Создана ссылка на детскую медицинскую карту');
+        console.log('Создана копия детской медицинской карты');
         return copy;
+    }
+    
+    clone() {
+        const cloned = new ChildMedicalCard(
+            this.patientName,
+            this.age,
+            this.isInsured,
+            this.vaccinationStatus
+        );
+        console.log('Создан клон детской медицинской карты');
+        return cloned;
     }
     
     static clone(original) {
         if (!(original instanceof ChildMedicalCard)) {
             throw new Error('Можно клонировать только объекты ChildMedicalCard');
         }
-        return new ChildMedicalCard(
-            original.patientName,
-            original.age,
-            original.isInsured,
-            original.vaccinationStatus
-        );
+        
+        return original.clone();
     }
     
     getVaccinationRecommendation() {
-        if (this.age < 1) return "Рекомендуется начать вакцинацию";
-        if (this.age < 6) return "Продолжить по графику вакцинации";
+        if (this.age < 1) {
+            return "Рекомендуется начать вакцинацию";
+        }
+        
+        if (this.age < 6) {
+            return "Продолжить по графику вакцинации";
+        }
+        
         return "Пройти школьную вакцинацию";
     }
 }
