@@ -63,10 +63,29 @@ export class MedicalCard {
         return this;
     }
     
+    clone() {
+        const cloned = new MedicalCard(
+            this.patientName,
+            this.age,
+            this.isInsured
+        );
+        console.log('Создан клон медицинской карты');
+        return cloned;
+    }
+    
     #calculateHealthRisk() {
-        if (this.#age < 18) return 'Низкий';
-        if (this.#age < 45) return 'Средний';
-        if (this.#age < 65) return 'Высокий';
+        if (this.#age < 18) {
+            return 'Низкий';
+        }
+        
+        if (this.#age < 45) {
+            return 'Средний';
+        }
+        
+        if (this.#age < 65) {
+            return 'Высокий';
+        }
+        
         return 'Очень высокий';
     }
     
@@ -78,10 +97,7 @@ export class MedicalCard {
         if (!(original instanceof MedicalCard)) {
             throw new Error('Можно клонировать только объекты MedicalCard');
         }
-        return new MedicalCard(
-            original.patientName,
-            original.age,
-            original.isInsured
-        );
+        
+        return original.clone();
     }
 }
