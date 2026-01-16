@@ -25,15 +25,15 @@ export class MedicalCard {
         if (typeof name === 'string' && name.length > 0) {
             this.#patientName = name;
         } else {
-            console.error('Имя пациента должно быть непустой строкой');
+            console.error('Напишите имя пациента');
         }
     }
     
     set age(patientAge) {
-        if (typeof patientAge === 'number' && patientAge >= 0 && patientAge <= 150) {
+        if (typeof patientAge === 'number' && patientAge >= 0 && patientAge <= 90) {
             this.#age = patientAge;
         } else {
-            console.error('Возраст должен быть числом от 0 до 150');
+            console.error('Возраст должен быть от 0 до 90');
         }
     }
     
@@ -49,7 +49,7 @@ export class MedicalCard {
         console.log('Медицинская карта:');
         console.log(`Пациент: ${this.#patientName}`);
         console.log(`Возраст: ${this.#age}`);
-        console.log(`Страховка: ${this.#isInsured ? 'Да' : 'Нет'}`);
+        console.log(`Страховка: ${this.#isInsured ? 'ЕСть' : 'Нет'}`);
     }
     
     delete() {
@@ -64,13 +64,80 @@ export class MedicalCard {
     }
     
     clone() {
-        const cloned = new MedicalCard(
-            this.patientName,
-            this.age,
-            this.isInsured
-        );
+        const cloned = MedicalCard.#deepClone(this);
         console.log('Создан клон медицинской карты');
         return cloned;
+    }
+    
+    static #deepClone(obj, hash = new WeakMap()) {
+        if (obj === null || typeof obj !== 'object') {
+            return obj;
+        }
+        
+        if (hash.has(obj)) {
+            return hash.get(obj);
+        }
+        
+        if (obj instanceof Date) {
+            return new Date(obj);
+        }
+        
+        if (obj instanceof RegExp) {
+            return new RegExp(obj);
+        }
+        
+        if (obj instanceof Map) {
+            const copy = new Map();
+            hash.set(obj, copy);
+            obj.forEach((value, key) => {
+                copy.set(key, MedicalCard.#deepClone(value, hash));
+            });
+            return copy;
+        }
+        
+        if (obj instanceof Set) {
+            const copy = new Set();
+            hash.set(obj, copy);
+            obj.forEach(value => {
+                copy.add(MedicalCard.#deepClone(value, hash));
+            });
+            return copy;
+        }
+        
+        const proto = Object.getPrototypeOf(obj);
+        
+        if (proto && proto.constructor) {
+            const clone = Object.create(proto);
+            hash.set(obj, clone);
+            
+            const allKeys = [
+                ...Object.getOwnPropertyNames(obj),
+                ...Object.getOwnPropertySymbols(obj)
+            ];
+            
+            for (const key of allKeys) {
+                if (key.startsWith('#')) {
+                    continue;
+                }
+                
+                const descriptor = Object.getOwnPropertyDescriptor(obj, key);
+                
+                if (descriptor) {
+                    if (typeof descriptor.value === 'object' && descriptor.value !== null) {
+                        Object.defineProperty(clone, key, {
+                            ...descriptor,
+                            value: MedicalCard.#deepClone(descriptor.value, hash)
+                        });
+                    } else {
+                        Object.defineProperty(clone, key, descriptor);
+                    }
+                }
+            }
+            
+            return clone;
+        }
+        
+        return obj;
     }
     
     #calculateHealthRisk() {
